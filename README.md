@@ -1,6 +1,5 @@
-# amazonMLChallenge
 <h1>Description</h1>
-Product length estimation using parameters of Title, Product descrption, Bullet points and Product Type Id.
+Product length estimation using parameters of Title, Product descrption, Bullet points and Product Type Id. This project is made as a part of Amazon ML challenge, all the product title, description and bullet points are the one present in the Amazon shopping application.
 <br>
 <h1>Technologies used: </h1>
 <ul>
