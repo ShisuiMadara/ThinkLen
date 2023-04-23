@@ -1,44 +1,110 @@
-import pandas as pd
-import numpy as np
-import tensorflow as tf
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import mean_absolute_percentage_error
+# -*- coding: utf-8 -*-
+
+import pandas as pd 
+import cuml,cupy,cudf
+import numpy 
+import csv 
+from tqdm.notebook import tqdm_notebook
+from deep_translator import GoogleTranslator
+from langdetect import detect
+# from cuml.feature_extraction.text import TfidfVectorizer
+# from cuml.neighbors import NearestNeighbors
+from sentence_transformers import SentenceTransformer
+
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+os.environ['NUMBAPRO_NVVM'] = '/usr/lib/cuda/nvvm/lib64/libnvvm.so'
+os.environ['NUMBAPRO_LIBDEVICE'] = '/usr/lib/cuda/nvvm/libdevice/'
+os.environ['CONDA_PREFIX'] = '/usr/lib'
 
 
-data = pd.read_csv("product_data.csv")
-
-data = data.dropna()
-
-train_data, test_data = train_test_split(data, test_size=0.2, random_state=42)
+# translator = GoogleTranslator(source='auto', target='en')
+# path_ls = ["dataset/a.csv"]
 
 
-train_data = pd.get_dummies(train_data, columns=["PRODUCT_TYPE_ID"])
-
-scaler = StandardScaler()
-train_data[["PRODUCT_LENGTH"]] = scaler.fit_transform(train_data[["PRODUCT_LENGTH"]])
-test_data[["PRODUCT_LENGTH"]] = scaler.transform(test_data[["PRODUCT_LENGTH"]])
-
-model = tf.keras.models.Sequential([
-    tf.keras.layers.Dense(64, activation='relu', input_shape=(train_data.shape[1]-1,)),
-    tf.keras.layers.Dense(32, activation='relu'),
-    tf.keras.layers.Dense(1)
-])
-
-
-model.compile(optimizer='adam', loss='mse', metrics=['mape'])
-
-istory = model.fit(train_data.iloc[:,:-1], train_data.iloc[:,-1], epochs=10, validation_split=0.2)
+# def translate(sentence):
+#     try:
+#         lang =detect(sentence)
+#         if lang == 'en':
+#             return sentence
+#         else:
+#             x = translator.translate(str(sentence))
+#             return x
+#     except:
+#         return sentence
 
 
-test_loss, test_mape = model.evaluate(test_data.iloc[:,:-1], test_data.iloc[:,-1], verbose=0)
-print("Test loss:", test_loss)
-print("Test MAPE:", test_mape)
+# def create_embedding (sentence):
+#   model = SentenceTransformer('sentence-transformers/paraphrase-mpnet-base-v2')
+#   embeddings = model.encode(str(sentence))
+#   return embeddings
+#   # print(embeddings)
 
 
-new_data = pd.read_csv("new_product_data.csv")
-new_data = pd.get_dummies(new_data, columns=["PRODUCT_TYPE_ID"])
-new_data[["PRODUCT_LENGTH"]] = scaler.transform(new_data[["PRODUCT_LENGTH"]])
-predictions = model.predict(new_data)
+# def knn ():
 
-np.savetxt("predictions.csv", predictions, delimiter=",")
+#     KNN = 50
+#     BATCH_SIZE = 256
+#     NUM_BATCHES = test_embed.shape[0]//BATCH_SIZE
+#     model = NearestNeighbors(n_neighbors=KNN)
+#     model.fit(train_embed)
+#     test_pred = []
+
+#     start = time.time()
+#     for i in range(NUM_BATCHES + 1):
+#         start = i*BATCH_SIZE
+#         end = (i+1)*BATCH_SIZE
+        
+#         distances, indices = model.kneighbors(test_embed[start:end,])
+        
+#         for k in range(end-start):
+#             IDX = np.where(distances[k,] == np.min(distances[k,]))[0]
+#             IDS = indices[k,IDX]
+#             ls = train_df_cpu.iloc[cupy.asnumpy(IDS)].BROWSE_NODE_ID.values
+#             test_pred.append(ls)
+            
+#         if(i % 50 == 0):
+#             print("DONE PRODUCTS :", end)
+#             print("Time : ",int(time.time()-start),"sec")
+
+# def translate ():
+#     for i,path in enumerate(path_ls):
+#         df = pd.read_csv(path)
+#         df["TITLE"] = df["TITLE"].progress_apply(translate)
+#         df["BULLET_POINTS"] = df["BULLET_POINTS"].progress_apply(translate)
+#         df["DESCRIPTION"] = df["DESCRIPTION"].progress_apply(translate)
+#         df.to_csv(f"/content/drive/MyDrive/datasetb2d9982/dataset/a_out.csv",index=False)
+
+# def embed ():
+#     for i,path in enumerate(path_ls):
+#         df = pd.read_csv(path)
+#         df["TITLE"] = df["TITLE"].progress_apply(create_embedding)
+#         df["BULLET_POINTS"] = df["BULLET_POINTS"].progress_apply(create_embedding)
+#         df["DESCRIPTION"] = df["DESCRIPTION"].progress_apply(create_embedding)
+#         df.to_csv(f"/content/drive/MyDrive/datasetb2d9982/dataset/a_embed_out.csv",index=False)
+
+# def test() :
+#     pred_ls = [i[0] for i in test_pred]
+
+#     result_df = pd.DataFrame.from_dict({
+#         "PRODUCT_ID" : test_df_cpu["PRODUCT_ID"],
+#         "PRODUCT_LENGTH" : pred_ls,
+#     })
+#     result_df.to_csv("./submission.csv",index=False)
+#     result_df.head()
+
+
+# if __name__ == "main":
+
+    
+#     translate()
+
+#     embed()
+    
+
+    
+
+
+    
+
+
